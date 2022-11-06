@@ -1,0 +1,159 @@
+# DWM
+create table region_dim (   
+region_name varchar2(30),   
+district varchar2(30),   
+city varchar2(30),   
+province varchar2(30),   
+primary key (region_name)  
+)
+
+insert into region_dim values ('parel','mumbai','mumbai','maharashtra')
+
+insert into region_dim values ('chembur','kurla','mumbai','delhi')
+
+insert into region_dim values ('panvel','navi mumbai','navi mumbai','chennai')
+
+select * from region_dim
+
+create table time_dim (    
+time int,    
+day varchar2(30),    
+month varchar2(30),    
+season varchar2(30),    
+primary key (time)    
+)
+
+insert into time_dim values (2,'monday','jan','winter')
+
+insert into time_dim values (6,'tuesday','aug','monsoon')
+
+insert into time_dim values (4,'thursday','may','summer')
+
+create table temperature_dim (    
+temperature int,    
+temperature_range varchar2(30),    
+temperature_unit varchar2(30),    
+primary key (temperature)    
+)
+
+insert into temperature_dim values (24,'20-30','celcius')
+
+insert into temperature_dim values (33,'20-40','degrees')
+
+insert into temperature_dim values (22,'10-30','fahrenheit')
+
+create table precipitation_dim (    
+precipitation int,    
+precipitation_range varchar2(30),    
+precipitation_desc varchar2(30),    
+primary key (precipitation)    
+)
+
+insert into precipitation_dim values (10,'10-30','normal')
+
+insert into precipitation_dim values (80,'20-100','moderate')
+
+insert into precipitation_dim values (110,'100-300','higher')
+
+create table fact (    
+region_name varchar2(30) references region_dim(region_name),   
+time int references time_dim(time),   
+temperature int references temperature_dim(temperature),     
+)
+
+create table fact (    
+region_name varchar2(30) references region_dim(region_name),   
+time int references time_dim(time),   
+temperature int references temperature_dim(temperature) 
+)
+
+
+insert into fact select r.region_name,t.time,tp.temperature from region_dim r cross join time_dim t cross join temperature_dim tp
+27 row(s) inserted.
+
+select * from fact
+
+drill down
+
+ select * from fact    
+ inner join time_dim   
+ on fact.time=time_dim.time
+
+select time,count(region_name) 
+ from fact 
+ group by rollup(time)
+ 
+ select time,count(region_name) 
+ from fact  where time=2 
+ group by rollup(time)
+ 
+TIME	COUNT(REGION_NAME)
+2	9
+ - 	9
+
+2 rows selected.
+
+dice
+
+\\all dimesions
+select city,district   
+ from (fact inner join region_dim on fact.region_name=region_dim.region_name)  
+ join temperature_dim on fact.temperature=temperature_dim.temperature
+CITY	DISTRICT
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+mumbai	kurla
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+navi mumbai	navi mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+mumbai	mumbai
+
+27 rows selected.
+
+select city,district   
+ from (fact inner join region_dim on fact.region_name=region_dim.region_name)  
+ join temperature_dim on fact.temperature=temperature_dim.temperature 
+ where temperature=22 and province='maharashtra'
+
+slice
+
+select city,province  
+ from fact  
+ inner join region_dim 
+ on fact.region_name=region_dim.region_name 
+ where district='navi mumbai' 
+ 
+CITY	PROVINCE
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+navi mumbai	maharashtra
+
+9 rows selected.
+
+ 
