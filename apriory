@@ -1,0 +1,62 @@
+# DWM
+
+import pandas as pd 
+df=pd.DataFrame({'age':['<=30','<=30','31...40','>40','>40','>40','31...40','<=30','<=30','>40','<=30 ','31...40','31...40','>40'], 
+'income':['h','h','h','m','l','l','l','m','l','m','m','m','h','m'], 
+'student':['n','n','n','n','y','y','y','n','y','y','y','n','y','n'], 
+'credit':['f','e','f','f','f','e','e','f','f','f','e','e','f','e'], 
+'buy':['n','n','y','y','y','n','y','n','y','y','y','y','y','n']}) 
+county= ((df['buy'] =='y').sum()) 
+countn= (df['buy'] =='n').sum() 
+counta = county+countn 
+pby=county/counta 
+pbn=countn/counta 
+count3y =(((df['age'] =='<=30') & (df['buy'] =='y')).sum()) 
+count3n =(((df['age'] =='<=30') & (df['buy'] =='n')).sum()) 
+pbay=count3y/county 
+print("P(age ='<=30' | buys_computer ='yes') = ") 
+print(pbay) 
+pban=count3n/countn 
+print("P(age ='<=30' | buys_computer ='no') = ") 
+print(pban) 
+countmy =(((df['income'] =='m') & (df['buy'] =='y')).sum()) 
+countmn =(((df['income'] =='m') & (df['buy'] =='n')).sum()) 
+pbmy=countmy/county 
+print("P(income='medium' | buys_computer ='yes') = ") 
+print(pbmy) 
+pbny=countmn/countn 
+print("P(income='medium' | buys_computer ='no') = ") 
+print(pbny) 
+countsy =(((df['student'] =='y') & (df['buy'] =='y')).sum()) 
+countsn =(((df['student'] =='y') & (df['buy'] =='n')).sum()) 
+pbsy=countsy/county 
+print("P(student='yes' | buys_computer ='yes') = ") 
+print(pbsy) 
+pbsn=countsn/countn 
+print("P(student='yes' | buys_computer ='no') = ") 
+print(pbsn) 
+countcy =(((df['credit'] =='f') & (df['buy'] =='y')).sum()) 
+countcn =(((df['credit'] =='f') & (df['buy'] =='n')).sum()) 
+pbcy=countcy/county 
+print("P(credit_rating='fair' | buys_computer ='yes') = ") 
+print(pbcy) 
+pbcn=countcn/countn 
+print("P(credit_rating='fair' | buys_computer ='no') = ") 
+print(pbcn) 
+print("X = (age <=30 , income= medium, student=yes = credit_rating = fair)") 
+py=pbay*pbmy*pbsy*pbcy 
+print("P(X|buys_computer ='yes') = ") 
+print(py) 
+pn=pban*pbny*pbsn*pbcn 
+print("P(X|buys_computer ='no') = ") 
+print(pn) 
+final_py=pby*py 
+print("P(X|C)*P(C) = (P(X|buys_computer ='yes') * P(buys_computer = 'yes')) = ") 
+print(final_py) 
+final_pn=pbn*pn 
+print("P(X|C)*P(C) = (P(X|buys_computer ='no') * P(buys_computer = 'no')) = ") 
+print(final_pn) 
+print("RESULT = ") 
+if (final_py>final_pn): 
+    print('X belongs to class ("buys_computer = yes")') 
+else: print('X belongs to class ("buys_computer = no")')
